@@ -8,11 +8,28 @@ use App\Http\Controllers\Controller;
 
 class SuggestionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Suggestion::with('user')->paginate(10);
+        $query = Suggestion::with('user');
+    
+        if ($request->filled('status')) {
+            $query->where('status', strtolower($request->input('status')));
+        }
+    
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDir = $request->input('sort_dir', 'desc');
+    
+        $sortable = ['created_at', 'updated_at', 'status'];
+    
+        if (in_array($sortBy, $sortable)) {
+            $query->orderBy($sortBy, $sortDir === 'asc' ? 'asc' : 'desc');
+        }
+    
+        $perPage = $request->input('per_page', 10);
+    
+        return $query->paginate($perPage)->appends($request->query());
     }
-
+    
     public function store(Request $request)
     {
         $request->validate([
