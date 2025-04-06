@@ -11,24 +11,25 @@ class SongController extends Controller
     public function index(Request $request)
     {
         $perPage = (int) $request->input('per_page', 10);
-        $page = (int) $request->input('page', 1);
-        $offset = ($page - 1) * $perPage;
+        $title = $request->input('title'); 
+        $sortBy = $request->input('sort_by', 'id'); 
+        $sortDir = $request->input('sort_dir', 'asc'); 
     
-        $songs = Song::query()
-            ->offset($offset)
-            ->limit($perPage)
-            ->get();
+        $query = Song::query();
     
-        $total = Song::count();
+        if ($title) {
+            $query->where('title', 'like', "%{$title}%");
+        }
     
-        return response()->json([
-            'data' => $songs,
-            'page' => $page,
-            'per_page' => $perPage,
-            'total' => $total,
-            'count' => $songs->count(),
-        ]);
+        $sortable = ['id', 'title', 'created_at', 'updated_at', 'plays'];
+    
+        if (in_array($sortBy, $sortable)) {
+            $query->orderBy($sortBy, $sortDir === 'desc' ? 'desc' : 'asc');
+        }
+    
+        return response()->json($query->paginate($perPage));
     }
+    
 
     public function topPlayed()
     {
