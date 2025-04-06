@@ -6,12 +6,17 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use App\Models\User;
 use Database\Seeders\SongSeeder;
+use Database\Seeders\SuggestionSeeder;
 class DatabaseSeeder extends Seeder
 {
     public function run()
     {
         $this->call([
             SongSeeder::class,
+        ]);
+
+        $this->call([
+            SuggestionSeeder::class,
         ]);
 
         User::firstOrCreate(

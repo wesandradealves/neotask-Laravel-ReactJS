@@ -37,5 +37,16 @@ services:
     depends_on:
       - app
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: laravel-api-top5-phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "8081:80" 
+    depends_on:
+      - mysql
+
 volumes:
   mysql-data:
