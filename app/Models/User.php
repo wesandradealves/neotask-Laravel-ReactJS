@@ -14,7 +14,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        // certifique-se de permitir 'role' se você quiser definir isso via formulário ou factory
         'role',
     ];
 

@@ -10,25 +10,29 @@ class SongController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = $request->input('per_page', 10); // número de itens por página
-        $offset = $request->input('offset', 0); // quantos pular, ex: 5 para começar na 6ª
+        $perPage = (int) $request->input('per_page', 10);
+        $page = (int) $request->input('page', 1);
+        $offset = ($page - 1) * $perPage;
     
-        $songs = \App\Models\Song::query()
+        $songs = Song::query()
             ->offset($offset)
             ->limit($perPage)
             ->get();
     
+        $total = Song::count();
+    
         return response()->json([
             'data' => $songs,
-            'offset' => $offset,
+            'page' => $page,
             'per_page' => $perPage,
+            'total' => $total,
             'count' => $songs->count(),
         ]);
     }
 
     public function topPlayed()
     {
-        $topSongs = \App\Models\Song::orderByDesc('play_count')
+        $topSongs = \App\Models\Song::orderByDesc('plays')
             ->limit(5)
             ->get();
     
