@@ -106,7 +106,7 @@ Schema::create('suggestions', function (Blueprint $table) {
 | `PATCH` | `/api/songs/{id}`   | Atualizar música           | ✅ Sim       | ✅ Sim       |
 | `DELETE` | `/api/songs/{id}`  | Deletar música             | ✅ Sim       | ✅ Sim       |
 
-> ⚙️ Suporta paginação com `?page=2`, e offset com `?skip=5&take=10`.
+> ⚙️ Suporta paginação com `?page={n}`, e offset com `?offset={n}`.
 
 ---
 
