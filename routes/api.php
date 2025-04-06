@@ -11,11 +11,9 @@ Route::get('/health-test', function (Request $request) {
     return ['status' => 'OK', 'ip' => $request->ip()];
 });
 
-Route::middleware('api')->group(function () {
-    // Route::post('/login', function (Request $request) {
-    //     return app(AuthController::class)->login($request);
-    // });
+// Route::post('/change-password', [UserController::class, 'changePassword']);
 
+Route::middleware('api')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 
     Route::middleware('auth:sanctum')->post('/change-password', [UserController::class, 'changePassword']);
