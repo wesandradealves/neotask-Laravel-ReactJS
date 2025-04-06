@@ -1,6 +1,6 @@
 # 🎵 Laravel API - Tião Carreiro & Pardinho Songs
 
-Este projeto é uma API RESTful em Laravel para listagem de músicas da dupla **Tião Carreiro & Pardinho**, incluindo sugestões de novos vídeos via YouTube, autenticação com Sanctum, e permissões administrativas.
+Este projeto é uma API RESTful em Laravel para listagem de músicas da dupla **Tião Carreiro & Pardinho**, incluindo sugestões de novos vídeos via YouTube, autenticação com Sanctum, permissões administrativas, ordenações e filtros avançados.
 
 ---
 
@@ -51,11 +51,15 @@ A aplicação estará disponível em: [http://localhost:8080](http://localhost:8
 
 ## 🔐 Autenticação
 
-O projeto utiliza **Laravel Sanctum**. Para autenticar, você deve:
+O projeto utiliza **Laravel Sanctum**. Para autenticar:
 
-1. Criar um usuário via endpoint ou seeder
-2. Fazer login (endpoint `/login` se implementado)
-3. Utilizar o token Bearer nos headers das requisições protegidas.
+1. Crie um usuário via endpoint ou seeder
+2. Faça login (endpoint `/login` se implementado)
+3. Utilize o token Bearer nos headers das requisições protegidas:
+
+```http
+Authorization: Bearer {seu_token}
+```
 
 ---
 
@@ -103,10 +107,18 @@ Schema::create('suggestions', function (Blueprint $table) {
 | `GET`  | `/api/songs`         | Listar músicas             | ❌ Não       | ❌ Não       |
 | `GET`  | `/api/songs/top`     | Listar 5 mais tocadas      | ❌ Não       | ❌ Não       |
 | `POST` | `/api/songs`         | Criar música               | ✅ Sim       | ✅ Sim       |
-| `PATCH` | `/api/songs/{id}`   | Atualizar música           | ✅ Sim       | ✅ Sim       |
-| `DELETE` | `/api/songs/{id}`  | Deletar música             | ✅ Sim       | ✅ Sim       |
+| `PATCH`| `/api/songs/{id}`    | Atualizar música           | ✅ Sim       | ✅ Sim       |
+| `DELETE`| `/api/songs/{id}`   | Deletar música             | ✅ Sim       | ✅ Sim       |
 
-> ⚙️ Suporta paginação com `?page={n}`, e offset com `?offset={n}`.
+#### 🧭 Parâmetros suportados em `/api/songs`
+
+- Paginação: `?page={n}`
+- Ordenação: `?sort_by=${n}|created_at&sort_dir=asc|desc`
+- Filtros:
+  - `search=pagode`
+  - `is_active=true|false`
+
+> Exemplo: `/api/songs?search=moda&sort_by=plays&sort_dir=desc&page=2`
 
 ---
 
@@ -121,15 +133,22 @@ Schema::create('suggestions', function (Blueprint $table) {
 | `PATCH`| `/api/suggestions/{id}`             | Editar sugestão             | ✅ Sim       | ✅ Sim       |
 | `DELETE`| `/api/suggestions/{id}`            | Deletar sugestão            | ✅ Sim       | ✅ Sim       |
 
-> Campos obrigatórios: `youtube_link`
+#### 🧭 Parâmetros suportados em `/api/suggestions`
+
+- Paginação: `?page={n}`
+- Ordenação: `?sort_by=${n}|created_at&sort_dir=asc|desc`
+- Filtros:
+  - `status=pending|approved|rejected`
+
+> Exemplo: `/api/suggestions?status=pending&sort_by=created_at&sort_dir=desc`
 
 ---
 
 ### 👤 User
 
-| Método | Rota         | Descrição             |
-|--------|--------------|-----------------------|
-| GET    | `/api/user`  | Dados do usuário logado (token necessário) |
+| Método | Rota         | Descrição                                    |
+|--------|--------------|----------------------------------------------|
+| GET    | `/api/user`  | Dados do usuário logado (token necessário)   |
 
 ---
 
@@ -151,12 +170,19 @@ Authorization: Bearer {seu_token}
 
 ```http
 POST /api/songs
+Authorization: Bearer {token}
 Content-Type: application/json
 
 {
   "title": "Pagode em Brasília",
   "youtube_link": "https://youtube.com/watch?v=123"
 }
+```
+
+### Listar músicas com filtro e ordenação
+
+```http
+GET /api/songs?search=moda&sort_by=plays&sort_dir=desc&page=1
 ```
 
 ### Top 5 músicas mais tocadas
@@ -187,13 +213,6 @@ Content-Type: application/json
 {
   "youtube_link": "https://youtube.com/watch?v=456def"
 }
-```
-
-### Deletar sugestão
-
-```http
-DELETE /api/suggestions/3
-Authorization: Bearer {token}
 ```
 
 ---
