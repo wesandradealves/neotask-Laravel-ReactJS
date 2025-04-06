@@ -1,3 +1,4 @@
+
 # 🎵 Laravel API - Tião Carreiro & Pardinho Songs
 
 Este projeto é uma API RESTful em Laravel para listagem de músicas da dupla **Tião Carreiro & Pardinho**, incluindo sugestões de novos vídeos via YouTube, autenticação com Sanctum, permissões administrativas, ordenações e filtros avançados.
@@ -78,7 +79,7 @@ Schema::create('songs', function (Blueprint $table) {
     $table->id();
     $table->string('title');
     $table->string('youtube_link');
-    $table->unsignedBigInteger('plays')->default(0); // campo para top músicas
+    $table->unsignedBigInteger('plays')->default(0);
     $table->boolean('is_active')->default(true);
     $table->timestamps();
 });
@@ -146,9 +147,24 @@ Schema::create('suggestions', function (Blueprint $table) {
 
 ### 👤 User
 
-| Método | Rota         | Descrição                                    |
-|--------|--------------|----------------------------------------------|
-| GET    | `/api/user`  | Dados do usuário logado (token necessário)   |
+| Método | Rota              | Descrição                                    |
+|--------|-------------------|----------------------------------------------|
+| GET    | `/api/user`       | Dados do usuário logado (token necessário)   |
+| POST   | `/api/change-password` | Alterar senha (token necessário)     |
+
+#### 🔑 Exemplo: Trocar senha
+
+```http
+POST /api/change-password
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "current_password": "senhaAntiga123",
+  "new_password": "novaSenha456",
+  "new_password_confirmation": "novaSenha456"
+}
+```
 
 ---
 
@@ -219,7 +235,7 @@ Content-Type: application/json
 
 ## 👨‍💻 Autor
 
-Feito com ❤️ por [Seu Nome](https://github.com/seu-usuario)
+Feito com ❤️ por [Seu Nome](https://github.com/wesandradealves)
 
 ---
 
