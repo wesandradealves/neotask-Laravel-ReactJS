@@ -11,8 +11,13 @@ class Suggestion extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'youtube_link', 'status'];
-
+    protected $fillable = [
+        'user_id',
+        'youtube_link',
+        'video_id', 
+        'status'
+    ];
+    
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
