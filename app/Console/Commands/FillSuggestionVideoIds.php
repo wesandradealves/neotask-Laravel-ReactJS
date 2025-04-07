@@ -19,14 +19,13 @@ class FillSuggestionVideoIds extends Command
                 $videoId = $this->extractYoutubeId($suggestion->youtube_link);
 
                 if ($videoId) {
-                    // Evita sobrescrever duplicadas
                     if (!Suggestion::where('video_id', $videoId)->exists()) {
                         $suggestion->video_id = $videoId;
                         $suggestion->save();
                         $count++;
                     } else {
                         $this->warn("Duplicado ignorado: {$suggestion->youtube_link}");
-                        $suggestion->delete(); // ou trate de outra forma se preferir
+                        $suggestion->delete(); 
                     }
                 }
             }
