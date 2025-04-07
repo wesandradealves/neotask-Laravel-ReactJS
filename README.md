@@ -55,7 +55,7 @@ A aplicação estará disponível em: [http://localhost:8080](http://localhost:8
 O projeto utiliza **Laravel Sanctum**. Para autenticar:
 
 1. Crie um usuário via endpoint ou seeder
-2. Faça login (endpoint `/login` se implementado)
+2. Faça login (endpoint `/login`)
 3. Utilize o token Bearer nos headers das requisições protegidas:
 
 ```http
@@ -67,6 +67,8 @@ Authorization: Bearer {seu_token}
 ## 👑 Middleware de Admin
 
 Adicionamos um middleware chamado `is_admin`. Ele verifica o atributo `is_admin` no modelo `User`.
+
+As rotas protegidas para admin estão sob `/api/suggestions`, `/api/songs`, `/api/health-admin`, etc., e exigem autenticação e `is_admin=true`.
 
 ---
 
@@ -97,6 +99,35 @@ Schema::create('suggestions', function (Blueprint $table) {
 });
 ```
 
+### ✅ `users`, `password_reset_tokens` e `sessions` tables
+
+```php
+Schema::create('users', function (Blueprint $table) {
+    $table->id();
+    $table->string('name');
+    $table->string('email')->unique();
+    $table->timestamp('email_verified_at')->nullable();
+    $table->string('password');
+    $table->rememberToken();
+    $table->timestamps();
+});
+
+Schema::create('password_reset_tokens', function (Blueprint $table) {
+    $table->string('email')->primary();
+    $table->string('token');
+    $table->timestamp('created_at')->nullable();
+});
+
+Schema::create('sessions', function (Blueprint $table) {
+    $table->string('id')->primary();
+    $table->foreignId('user_id')->nullable()->index();
+    $table->string('ip_address', 45)->nullable();
+    $table->text('user_agent')->nullable();
+    $table->longText('payload');
+    $table->integer('last_activity')->index();
+});
+```
+
 ---
 
 ## 🔌 Endpoints da API
@@ -108,7 +139,7 @@ Schema::create('suggestions', function (Blueprint $table) {
 | `GET`  | `/api/songs`         | Listar músicas             | ❌ Não       | ❌ Não       |
 | `GET`  | `/api/songs/top`     | Listar 5 mais tocadas      | ❌ Não       | ❌ Não       |
 | `POST` | `/api/songs`         | Criar música               | ✅ Sim       | ✅ Sim       |
-| `PATCH`| `/api/songs/{id}`    | Atualizar música           | ✅ Sim       | ✅ Sim       |
+| `PUT`  | `/api/songs/{id}`    | Atualizar música           | ✅ Sim       | ✅ Sim       |
 | `DELETE`| `/api/songs/{id}`   | Deletar música             | ✅ Sim       | ✅ Sim       |
 
 #### 🧭 Parâmetros suportados em `/api/songs`
@@ -119,52 +150,28 @@ Schema::create('suggestions', function (Blueprint $table) {
   - `search=pagode`
   - `is_active=true|false`
 
-> Exemplo: `/api/songs?search=moda&sort_by=plays&sort_dir=desc&page=2`
-
 ---
 
 ### 💡 Suggestions
 
 | Método | Rota                                | Ação                        | Autenticação | Admin apenas |
 |--------|-------------------------------------|-----------------------------|--------------|--------------|
-| `GET`  | `/api/suggestions`                  | Listar sugestões            | ✅ Sim       | ❌ Não       |
+| `GET`  | `/api/suggestions`                  | Listar sugestões            | ✅ Sim       | ✅ Sim       |
 | `POST` | `/api/suggestions`                  | Enviar sugestão             | ✅ Sim       | ❌ Não       |
 | `PATCH`| `/api/suggestions/{id}/approve`     | Aprovar sugestão            | ✅ Sim       | ✅ Sim       |
 | `PATCH`| `/api/suggestions/{id}/reject`      | Rejeitar sugestão           | ✅ Sim       | ✅ Sim       |
 | `PATCH`| `/api/suggestions/{id}`             | Editar sugestão             | ✅ Sim       | ✅ Sim       |
 | `DELETE`| `/api/suggestions/{id}`            | Deletar sugestão            | ✅ Sim       | ✅ Sim       |
 
-#### 🧭 Parâmetros suportados em `/api/suggestions`
-
-- Paginação: `?page={n}`
-- Ordenação: `?sort_by=${n}|created_at&sort_dir=asc|desc`
-- Filtros:
-  - `status=pending|approved|rejected`
-
-> Exemplo: `/api/suggestions?status=pending&sort_by=created_at&sort_dir=desc`
-
 ---
 
 ### 👤 User
 
-| Método | Rota              | Descrição                                    |
-|--------|-------------------|----------------------------------------------|
-| GET    | `/api/user`       | Dados do usuário logado (token necessário)   |
-| POST   | `/api/change-password` | Alterar senha (token necessário)     |
-
-#### 🔑 Exemplo: Trocar senha
-
-```http
-POST /api/change-password
-Authorization: Bearer {token}
-Content-Type: application/json
-
-{
-  "current_password": "senhaAntiga123",
-  "new_password": "novaSenha456",
-  "new_password_confirmation": "novaSenha456"
-}
-```
+| Método | Rota                  | Descrição                                    |
+|--------|-----------------------|----------------------------------------------|
+| GET    | `/api/user`           | Dados do usuário logado (token necessário)   |
+| POST   | `/api/change-password`| Alterar senha (token necessário)             |
+| POST   | `/api/login`          | Login (retorna token)                        |
 
 ---
 
@@ -201,12 +208,6 @@ Content-Type: application/json
 GET /api/songs?search=moda&sort_by=plays&sort_dir=desc&page=1
 ```
 
-### Top 5 músicas mais tocadas
-
-```http
-GET /api/songs/top
-```
-
 ### Sugerir nova música
 
 ```http
@@ -219,26 +220,15 @@ Content-Type: application/json
 }
 ```
 
-### Atualizar sugestão
-
-```http
-PATCH /api/suggestions/3
-Authorization: Bearer {token}
-Content-Type: application/json
-
-{
-  "youtube_link": "https://youtube.com/watch?v=456def"
-}
-```
-
 ---
 
 ## 👨‍💻 Autor
 
-Feito com ❤️ por [Seu Nome](https://github.com/wesandradealves)
+Feito com ❤️ por [Wes](https://github.com/wesandradealves)
 
 ---
 
 ## 📝 Licença
 
 Este projeto está licenciado sob a [MIT License](LICENSE).
+
