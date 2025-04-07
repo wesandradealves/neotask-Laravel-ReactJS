@@ -12,12 +12,6 @@ class UserController extends Controller
     public function changePassword(Request $request)
     {
         try {
-            // Aqui você pode colocar debug temporário:
-            \Log::info('🔐 Entrou no changePassword');
-            
-            // E ver se o usuário está autenticado:
-            \Log::info('Usuário autenticado:', ['user' => Auth::user()]);
-
             $request->validate([
                 'current_password' => 'required',
                 'new_password' => 'required|min:6|confirmed',

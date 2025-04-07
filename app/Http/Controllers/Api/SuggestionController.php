@@ -8,6 +8,18 @@ use App\Http\Controllers\Controller;
 
 class SuggestionController extends Controller
 {
+    private function extractYoutubeId($url)
+    {
+        $pattern = '%(?:youtube\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i';
+    
+        if (preg_match($pattern, $url, $matches)) {
+            return $matches[1];
+        }
+    
+        return null;
+    }
+    
+    
     public function index(Request $request)
     {
         $query = Suggestion::with('user');
@@ -35,15 +47,27 @@ class SuggestionController extends Controller
         $request->validate([
             'youtube_link' => 'required|url'
         ]);
-
+    
+        $videoId = $this->extractYoutubeId($request->youtube_link);
+    
+        if (!$videoId) {
+            return response()->json(['message' => 'Link do YouTube inválido.'], 422);
+        }
+    
+        if (Suggestion::where('video_id', $videoId)->exists()) {
+            return response()->json(['message' => 'Esta música já foi sugerida.'], 409);
+        }
+    
         $suggestion = Suggestion::create([
             'user_id' => auth()->id(),
             'youtube_link' => $request->youtube_link,
+            'video_id' => $videoId,
         ]);
-
+    
         return response()->json($suggestion, 201);
     }
-
+    
+    
     public function approve(Suggestion $suggestion)
     {
         $suggestion->update(['status' => 'approved']);

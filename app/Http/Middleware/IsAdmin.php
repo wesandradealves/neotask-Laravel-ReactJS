@@ -13,13 +13,13 @@ class IsAdmin
         if (!auth()->check()) {
             return response()->json([
                 'message' => 'Usuário não autenticado.'
-            ], 401); // Unauthorized
+            ], 401);
         }
         
         if (!auth()->user()->is_admin) {
             return response()->json([
                 'message' => 'Acesso restrito a administradores.'
-            ], 403); // Forbidden
+            ], 403); 
         }
         
 
