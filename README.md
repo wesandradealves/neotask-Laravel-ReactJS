@@ -157,7 +157,7 @@ Schema::create('sessions', function (Blueprint $table) {
 | Método | Rota                                | Ação                        | Autenticação | Admin apenas |
 |--------|-------------------------------------|-----------------------------|--------------|--------------|
 | `GET`  | `/api/suggestions`                  | Listar sugestões            | ✅ Sim       | ✅ Sim       |
-| `POST` | `/api/suggestions`                  | Enviar sugestão             | ❌ Não       | ❌ Não       |
+| `POST` | `/api/suggestions`                  | Enviar sugestão             | ✅ Sim       | ❌ Não       |
 | `PATCH`| `/api/suggestions/{id}/approve`     | Aprovar sugestão            | ✅ Sim       | ✅ Sim       |
 | `PATCH`| `/api/suggestions/{id}/reject`      | Rejeitar sugestão           | ✅ Sim       | ✅ Sim       |
 | `PATCH`| `/api/suggestions/{id}`             | Editar sugestão             | ✅ Sim       | ✅ Sim       |

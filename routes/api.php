@@ -11,11 +11,11 @@ use App\Http\Middleware\IsAdmin;
 Route::middleware('api')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/health-check', fn() => ['status' => 200]);
-    Route::post('/suggestions', [SuggestionController::class, 'store']);
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/change-password', [UserController::class, 'changePassword']);
         Route::get('/user', fn(Request $request) => $request->user());
+        Route::post('/suggestions', [SuggestionController::class, 'store']);
 
         Route::middleware(IsAdmin::class)->group(function () {
             Route::get('/suggestions', [SuggestionController::class, 'index']);
