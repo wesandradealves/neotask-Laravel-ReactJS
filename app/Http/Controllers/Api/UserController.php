@@ -43,4 +43,19 @@ class UserController extends Controller
             ], 500);
         }
     }
+
+    public function updateRole(Request $request, User $user)
+    {
+        $request->validate([
+            'role' => 'required|string|in:admin,user',
+        ]);
+    
+        $user->role = $request->role;
+        $user->save();
+    
+        return response()->json([
+            'message' => 'User role updated successfully.',
+            'user' => $user
+        ]);
+    }
 }

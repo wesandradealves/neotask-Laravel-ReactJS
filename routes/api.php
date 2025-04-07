@@ -6,67 +6,30 @@ use App\Http\Controllers\Api\SongController;
 use App\Http\Controllers\Api\SuggestionController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
-
-Route::get('/health-test', function (Request $request) {
-    return ['status' => 'OK', 'ip' => $request->ip()];
-});
-
-// Route::post('/change-password', [UserController::class, 'changePassword']);
+use App\Http\Middleware\IsAdmin;
 
 Route::middleware('api')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 
-    Route::middleware('auth:sanctum')->post('/change-password', [UserController::class, 'changePassword']);
-
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/suggestions', function (Request $request) {
-            return app(SuggestionController::class)->store($request);
-        });
+        Route::post('/change-password', [UserController::class, 'changePassword']);
+        Route::get('/user', fn(Request $request) => $request->user());
+        Route::post('/suggestions', [SuggestionController::class, 'store']);
 
-        Route::middleware('is_admin')->group(function () {
-            Route::patch('/suggestions/{suggestion}/approve', function (Request $request, $suggestion) {
-                return app(SuggestionController::class)->approve($request, $suggestion);
-            });
-
-            Route::patch('/suggestions/{suggestion}/reject', function (Request $request, $suggestion) {
-                return app(SuggestionController::class)->reject($request, $suggestion);
-            });
-
-            Route::patch('/suggestions/{suggestion}', function (Request $request, $suggestion) {
-                return app(SuggestionController::class)->update($request, $suggestion);
-            });
-
-            Route::delete('/suggestions/{suggestion}', function (Request $request, $suggestion) {
-                return app(SuggestionController::class)->destroy($request, $suggestion);
-            });
-
-            Route::post('/songs', function (Request $request) {
-                return app(SongController::class)->store($request);
-            });
-
-            Route::put('/songs/{song}', function (Request $request, $song) {
-                return app(SongController::class)->update($request, $song);
-            });
-
-            Route::delete('/songs/{song}', function (Request $request, $song) {
-                return app(SongController::class)->destroy($request, $song);
-            });
-        });
-
-        Route::get('/user', function (Request $request) {
-            return $request->user();
+        Route::middleware(IsAdmin::class)->group(function () {
+            Route::get('/health-admin', fn() => ['message' => 'Você é admin']);
+            Route::get('/suggestions', [SuggestionController::class, 'index']);
+            Route::patch('/suggestions/{suggestion}/approve', [SuggestionController::class, 'approve']);
+            Route::patch('/suggestions/{suggestion}/reject', [SuggestionController::class, 'reject']);
+            Route::patch('/suggestions/{suggestion}', [SuggestionController::class, 'update']);
+            Route::delete('/suggestions/{suggestion}', [SuggestionController::class, 'destroy']);
+        
+            Route::post('/songs', [SongController::class, 'store']);
+            Route::put('/songs/{song}', [SongController::class, 'update']);
+            Route::delete('/songs/{song}', [SongController::class, 'destroy']);
         });
     });
 
-    Route::get('/suggestions', function (Request $request) {
-        return app(SuggestionController::class)->index($request);
-    });
-
-    Route::get('/songs', function (Request $request) {
-        return app(SongController::class)->index($request);
-    });
-
-    Route::get('/songs/top', function (Request $request) {
-        return app(SongController::class)->topPlayed($request);
-    });
+    Route::get('/songs', [SongController::class, 'index']);
+    Route::get('/songs/top', [SongController::class, 'topPlayed']);
 });

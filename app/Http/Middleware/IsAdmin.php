@@ -10,9 +10,18 @@ class IsAdmin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || !auth()->user()->is_admin) {
-            return response()->json(['message' => 'Unauthorized.'], 403);
+        if (!auth()->check()) {
+            return response()->json([
+                'message' => 'Usuário não autenticado.'
+            ], 401); // Unauthorized
         }
+        
+        if (!auth()->user()->is_admin) {
+            return response()->json([
+                'message' => 'Acesso restrito a administradores.'
+            ], 403); // Forbidden
+        }
+        
 
         return $next($request);
     }
