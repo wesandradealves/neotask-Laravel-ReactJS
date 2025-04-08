@@ -44,6 +44,8 @@ class SuggestionController extends Controller
     
     public function store(Request $request)
     {
+        \Log::info('Authorization: ', [$request->header('Authorization')]);
+
         $request->validate([
             'youtube_link' => 'required|url'
         ]);
@@ -83,7 +85,8 @@ class SuggestionController extends Controller
     public function update(Request $request, Suggestion $suggestion)
     {
         $request->validate([
-            'youtube_link' => 'required|url'
+            'youtube_link' => 'required|url',
+            'video_id' => ['required', 'exists:videos,id']
         ]);
     
         $suggestion->update([

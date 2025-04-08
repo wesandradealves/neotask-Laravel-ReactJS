@@ -10,6 +10,11 @@ use App\Http\Middleware\IsAdmin;
 
 Route::middleware('api')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', function (Request $request) {
+        $request->user()->currentAccessToken()->delete();
+    
+        return response()->json(['message' => 'Token revogado com sucesso']);
+    });
     Route::get('/health-check', fn() => ['status' => 200]);
 
     Route::middleware('auth:sanctum')->group(function () {
