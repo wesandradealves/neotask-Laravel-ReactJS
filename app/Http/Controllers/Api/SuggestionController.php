@@ -38,8 +38,16 @@ class SuggestionController extends Controller
         }
     
         $perPage = $request->input('per_page', 10);
+        $offset = $request->input('offset', 0);
     
-        return $query->paginate($perPage)->appends($request->query());
+        $results = $query->forPage(($offset / $perPage) + 1, $perPage)->get();
+    
+        return response()->json([
+            'data' => $results,
+            'total' => $query->count(),
+            'per_page' => $perPage,
+            'current_page' => ($offset / $perPage) + 1,
+        ]);
     }
     
     public function store(Request $request)

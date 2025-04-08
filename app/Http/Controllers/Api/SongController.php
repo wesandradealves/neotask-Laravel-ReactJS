@@ -11,6 +11,7 @@ class SongController extends Controller
     public function index(Request $request)
     {
         $perPage = (int) $request->input('per_page', 10);
+        $offset = (int) $request->input('offset', 0); // Adiciona suporte ao offset
         $title = $request->input('title'); 
         $sortBy = $request->input('sort_by', 'id'); 
         $sortDir = $request->input('sort_dir', 'asc'); 
@@ -27,7 +28,14 @@ class SongController extends Controller
             $query->orderBy($sortBy, $sortDir === 'desc' ? 'desc' : 'asc');
         }
     
-        return response()->json($query->paginate($perPage));
+        $query->skip($offset)->take($perPage);
+    
+        return response()->json([
+            'data' => $query->get(),
+            'total' => $query->count(),
+            'per_page' => $perPage,
+            'offset' => $offset,
+        ]);
     }
     
 
