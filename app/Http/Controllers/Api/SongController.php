@@ -28,6 +28,8 @@ class SongController extends Controller
     
         if (in_array($sortBy, $sortable)) {
             $query->orderBy($sortBy, $sortDir === 'desc' ? 'desc' : 'asc');
+        } else {
+            \Log::warning("Parâmetro sort_by inválido: {$sortBy}");
         }
     
         $total = $query->count(); 
