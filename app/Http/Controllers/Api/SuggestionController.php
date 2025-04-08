@@ -37,16 +37,18 @@ class SuggestionController extends Controller
             $query->orderBy($sortBy, $sortDir === 'asc' ? 'asc' : 'desc');
         }
     
-        $perPage = $request->input('per_page', 10);
-        $offset = $request->input('offset', 0);
+        $perPage = (int) $request->input('per_page', 10);
+        $page = (int) $request->input('page', 1); // Obtém o parâmetro 'page'
+        $offset = ($page - 1) * $perPage; // Calcula o offset com base na página
     
-        $results = $query->forPage(($offset / $perPage) + 1, $perPage)->get();
+        $total = $query->count(); // Conta o total de registros antes de aplicar o offset e o limite
+        $results = $query->skip($offset)->take($perPage)->get();
     
         return response()->json([
             'data' => $results,
-            'total' => $query->count(),
+            'total' => $total,
             'per_page' => $perPage,
-            'current_page' => ($offset / $perPage) + 1,
+            'current_page' => $page, // Retorna a página atual
         ]);
     }
     
