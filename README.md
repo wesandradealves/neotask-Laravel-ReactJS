@@ -220,6 +220,45 @@ Content-Type: application/json
 }
 ```
 
+## 📬 Postman Collection
+
+Você pode importar a **collection completa** de testes da API diretamente no Postman.
+
+### 🔽 Download
+
+Baixe o arquivo da collection aqui:
+
+> [📥 Laravel API - Tião Carreiro & Pardinho.postman_collection.json](./Laravel%20API%20-%20Tião%20Carreiro%20&%20Pardinho.postman_collection.json)
+
+### 🧪 Como importar no Postman
+
+1. Abra o Postman
+2. Clique em **Import** (canto superior esquerdo)
+3. Selecione a aba **Upload Files**
+4. Envie o arquivo `Laravel API - Tião Carreiro & Pardinho.postman_collection.json`
+5. Pronto! A collection aparecerá com todos os endpoints organizados por pastas:
+   - `Auth`
+   - `Songs`
+   - `Suggestions`
+   - `User`
+
+### 🔐 Variáveis de ambiente recomendadas
+
+Crie um novo ambiente com as seguintes variáveis:
+
+| Nome        | Valor                     | Exemplo                  |
+|-------------|---------------------------|--------------------------|
+| `base_url`  | URL base da API           | `http://localhost:8080` |
+| `token`     | Token Bearer do usuário   | `eyJ0eXAiOiJK...`        |
+
+Use o token retornado após o login para autenticar nos endpoints protegidos.
+
+No header das requisições protegidas, inclua:
+
+```http
+Authorization: Bearer {{token}}
+```
+
 ---
 
 ## 👨‍💻 Autor
