@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# Corrige permissões da storage e bootstrap/cache
+echo "✔️ Corrigindo permissões..."
+chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
 cd /var/www
 
 # Instala as dependências

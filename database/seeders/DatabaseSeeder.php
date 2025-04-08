@@ -19,6 +19,10 @@ class DatabaseSeeder extends Seeder
             SuggestionSeeder::class,
         ]);
 
+        $this->call([
+            AdminUserSeeder::class,
+        ]);
+
         User::firstOrCreate(
             ['email' => 'test@example.com'],
             [
