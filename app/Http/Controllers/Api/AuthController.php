@@ -10,6 +10,8 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
+        \Log::info('🔐 Login API chamado', $request->all());
+
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
@@ -26,5 +28,16 @@ class AuthController extends Controller
             'token' => $token,
             'user' => $user,
         ]);
+    }
+
+    public function logout(Request $request)
+    {
+        $user = $request->user();
+    
+        if ($user) {
+            $user->currentAccessToken()->delete();
+        }
+    
+        return response()->json(['message' => 'Logout feito.']);
     }
 }

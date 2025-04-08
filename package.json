@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "next-auth": "^4.24.11",
+    "react-hook-form": "^7.55.0"
+  },
+  "devDependencies": {
+    "@types/next-auth": "^3.13.0"
+  }
+}
